@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a0f33">
+<title>슈퍼 갓생런 — 60초 성장 게임</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- 게임 월드 -->
+  <canvas id="stage"></canvas>
+
+  <!-- 상단 HUD -->
+  <header class="hud" id="hud" aria-hidden="true">
+    <div class="hud-row">
+      <div class="lv" id="hudLvBox">
+        <span class="lv-tag" id="hudLv">LV.1</span>
+        <b id="hudTitle">신입</b>
+      </div>
+      <div class="growth">
+        <i><b id="growthFill"></b></i>
+        <span id="growthLabel">대리 승진까지 5</span>
+      </div>
+      <div class="time">
+        <span>TIME</span>
+        <b id="time">60</b>
+      </div>
+    </div>
+    <div class="hud-row2">
+      <div class="coins">🪙 <b id="coins">0</b></div>
+      <div class="collection" id="collection"></div>
+    </div>
+    <div class="timebar"><i id="timefill"></i></div>
+  </header>
+
+  <div class="hit-flash" id="hitFlash"></div>
+  <div class="callout level" id="levelCallout" aria-live="polite"><em>LEVEL UP!</em><b></b><span></span></div>
+  <div class="callout item" id="itemCallout" aria-live="polite"><b></b><span></span></div>
+  <div class="callout danger" id="dangerCallout" aria-live="assertive"><b></b><span></span></div>
+  <div class="world-banner" id="worldBanner"><em></em><b></b><span></span></div>
+  <div class="finish-banner" id="finishBanner"><em>TIME UP</em><b>퇴근 완료! 🎉</b></div>
+
+  <!-- 재생 중인 곡 -->
+  <div class="now-playing" id="nowPlaying">
+    <span class="np-eq"><i></i><i></i><i></i><i></i></span>
+    <span class="np-txt">
+      <b>The Entertainer</b>
+      <span id="npPerformer">스콧 조플린 · 1902</span>
+    </span>
+  </div>
+
+  <!-- 대기 화면 -->
+  <section class="screen attract show" id="scAttract">
+    <div class="attract-inner">
+      <p class="eyebrow">누구나 <b>100% 당첨</b> · 60초 플레이</p>
+      <h1 class="logo"><small>SUPER</small>갓생런<span>!</span></h1>
+      <p class="lead-copy">60초 동안 <b>화장품 · 옷</b>을 모아<br>신입에서 <b>대표</b>까지 성장하세요</p>
+
+      <div class="panel">
+        <h2>🏢 성장 사다리 <span>= 할인율</span></h2>
+        <div class="ladder" id="ladder"></div>
+      </div>
+
+      <button class="btn primary big pulse" id="btnStart">화면을 누르면 출근 시작 ▶</button>
+
+      <ul class="howto">
+        <li>👆 <b>탭</b> 점프</li>
+        <li>✋ <b>길게</b> 더 높이</li>
+        <li>✌️ 공중에서 <b>한 번 더</b></li>
+        <li>❓ 블록은 <b>머리로 쿵</b></li>
+        <li>👟 방해꾼은 <b>밟기</b></li>
+      </ul>
+
+      <div class="panel">
+        <h2>🛍️ 모을 수 있는 아이템</h2>
+        <div class="lineup" id="lineup"></div>
+      </div>
+
+      <p class="warn">😩 월요병 · 📄 야근 · ⛈️ 스트레스에 부딪히면 <b>성장 포인트 −2</b><br><span>위에서 밟으면 오히려 보너스!</span></p>
+
+      <div class="ticker" id="ticker" hidden></div>
+
+      <p class="music-credit">
+        <span class="mc-note">♪</span>
+        <b>The Entertainer</b> — 스콧 조플린 作, 1902 · 래그타임 피아노<br>
+        <span>작곡 퍼블릭 도메인 · 연주 James Brigham (CC0)</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- 카운트다운 -->
+  <section class="screen count" id="scCount">
+    <div class="count-num" id="countNum">3</div>
+    <p class="count-tip"><b>탭</b> 점프 · <b>길게</b> 높이 · 공중에서 <b>한 번 더</b> 2단 점프</p>
+  </section>
+
+  <!-- 결과 -->
+  <section class="screen result" id="scResult">
+    <div class="card" id="resultCard">
+      <div class="grade" id="rGrade">LV.3 MANAGER</div>
+
+      <div class="hero-wrap">
+        <canvas id="rHero" width="132" height="168"></canvas>
+        <div class="hero-txt">
+          <p class="hero-kicker">60초 만에</p>
+          <b id="rTitle">과장</b>
+          <span id="rLook">핑크 블레이저 + 핸드백</span>
+        </div>
+      </div>
+
+      <div class="path" id="rPath"></div>
+
+      <div class="stats">
+        <div><b id="rGrowth">0</b><span>성장 포인트</span></div>
+        <div><b id="rItems">0</b><span>아이템</span></div>
+        <div><b id="rCoins">0</b><span>코인</span></div>
+        <div><b id="rStomps">0</b><span>스트레스 해소</span></div>
+      </div>
+
+      <div class="col-grid" id="rColGrid"></div>
+
+      <p class="near" id="rNear"></p>
+
+      <div class="coupon" id="coupon">
+        <div class="coupon-top">
+          <span class="coupon-brand">SUPER 갓생런</span>
+          <span class="coupon-badge">당첨 쿠폰</span>
+        </div>
+        <div class="coupon-percent">
+          <b id="rPercent">15</b><i>%</i><span>OFF</span>
+        </div>
+        <div class="coupon-perk" id="rPerk"></div>
+        <div class="coupon-divider"></div>
+        <div class="coupon-code" id="rCode">RUN-0000</div>
+        <p class="coupon-expire">이 쿠폰은 <b id="rExpire">10:00</b> 후 사라집니다</p>
+      </div>
+
+      <div class="lead-box" id="leadBox"></div>
+
+      <div class="board" id="board"></div>
+
+      <div class="actions">
+        <button class="btn primary" id="btnRetry">다시 출근! 🏃‍♀️</button>
+        <button class="btn ghost" id="btnShare">자랑하기</button>
+      </div>
+      <p class="staff-tip">📣 이 화면을 <b>스태프에게 보여주세요</b> — 증정품 + 할인 적용</p>
+    </div>
+  </section>
+
+  <div class="sys-btns">
+    <button class="sys-btn" id="btnSound" title="소리">🔊</button>
+    <button class="sys-btn" id="btnFs" title="전체화면">⛶</button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
