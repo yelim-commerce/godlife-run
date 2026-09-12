@@ -73,12 +73,15 @@ const CONFIG = {
 };
 
 /* ============ BGM ============
-   1순위: 실제 음원 (audio/entertainer.mp3)
+   1순위: 실제 음원 (audio/entertainer-v2.mp3)
      · 스콧 조플린 〈The Entertainer〉(1902) — 작곡 퍼블릭 도메인
      · 연주 James Brigham (2018) — CC0 1.0 (퍼블릭 도메인 헌정)
-     · 출처: Wikimedia Commons / 원본 5분 6초 → 앞 70초만 잘라 끝 3초 페이드아웃
+     · 출처: Wikimedia Commons / 원본 5분 6초 → 앞 96초만 잘라 끝 3초 페이드아웃
    2순위: 파일이 없거나 재생이 막히면 같은 곡을 칩튠 합성으로 자동 폴백          */
-const AUDIO = { src:'audio/entertainer.mp3', startAt:0, volume:0.55 };
+const AUDIO = {
+  src:'audio/entertainer-v2.mp3', startAt:0, volume:0.55,
+  rate:1.5            // 기본 재생 속도 (피치 유지). 60초×1.5 = 90초 분량이라 음원을 96초로 잘라 둠
+};
 
 /* 폴백 합성 — 〈The Entertainer〉 주선율 (작곡 퍼블릭 도메인). [MIDI, 16분음표 길이] */
 const SONG = (() => {
@@ -284,7 +287,8 @@ function prepareAudioFile(){
   const a = new Audio();
   a.src = AUDIO.src;
   a.preload = 'auto';
-  a.loop = true;                   // 70초 트랙 · 60초 플레이라 실제로는 순환하지 않음
+  a.loop = true;                   // 96초 트랙 ×1.5배속 = 64초 · 60초 플레이라 실제로는 순환하지 않음
+  a.preservesPitch = a.mozPreservesPitch = a.webkitPreservesPitch = true;   // 빨라져도 음높이는 그대로
   a.volume = soundOn ? AUDIO.volume : 0;
   a.addEventListener('error', () => { music.fileBroken = true; music.el = null; }, { once:true });
   music.el = a;
@@ -297,7 +301,7 @@ function musicStart(){
   if (music.el && !music.fileBroken){
     music.mode = 'file';
     try { music.el.currentTime = AUDIO.startAt; } catch(e){}
-    music.el.playbackRate = 1;
+    music.el.playbackRate = AUDIO.rate;
     music.el.volume = soundOn ? AUDIO.volume : 0;
     const p = music.el.play();
     if (p && p.catch) p.catch(() => { music.mode = 'none'; synthStart(); });   // 재생 거부 → 합성으로
@@ -307,7 +311,7 @@ function musicStart(){
 }
 function setMusicRate(r){
   music.rate = r;
-  if (music.el && !music.el.paused) music.el.playbackRate = r;
+  if (music.el && !music.el.paused) music.el.playbackRate = r * AUDIO.rate;
 }
 function synthStart(){
   if (!actx) return;
@@ -343,7 +347,7 @@ function musicSchedule(){
   const horizon = actx.currentTime + 0.2;
   let guard = 0;
   while (music.next < horizon && guard++ < 64){
-    const step = 60 / (SONG.bpm * music.rate) / 4;
+    const step = 60 / (SONG.bpm * music.rate * AUDIO.rate) / 4;
     const u = music.u % SONG.length;
     const n = SONG.at[u];
     if (n) chipNote(n[0], music.next, n[1] * step * 0.9, 'square', 0.05);

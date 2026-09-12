@@ -56,11 +56,12 @@ python3 -m http.server 8000   # → http://localhost:8000
 
 1순위 **실제 음원 파일**, 실패하면 **WebAudio 합성으로 자동 폴백**합니다.
 
-- `audio/entertainer.mp3` — 스콧 조플린 〈The Entertainer〉(1902). 작곡은 퍼블릭 도메인, 연주는 CC0.
-  Wikimedia Commons 원본(5분)에서 앞 70초만 잘라 페이드아웃 처리했습니다 (1.1MB). 자세한 내용은
+- `audio/entertainer-v2.mp3` — 스콧 조플린 〈The Entertainer〉(1902). 작곡은 퍼블릭 도메인, 연주는 CC0.
+  Wikimedia Commons 원본(5분)에서 앞 96초만 잘라 페이드아웃 처리했습니다 (1.5MB). 자세한 내용은
   [`audio/CREDITS.md`](audio/CREDITS.md).
+- **1.5배속 재생** (`AUDIO.rate`) — 음높이는 그대로 두고 템포만 빠르게. 칩튠 폴백도 같은 배속.
 - 파일이 없거나 재생이 막히면 같은 곡의 주선율 + 쿵짝 반주를 **칩튠으로 실시간 합성**합니다 (`SONG`).
-- 러시 중에는 `playbackRate` 1.1배.
+- 러시 중에는 여기서 1.1배 더 (1.65배).
 - 쿠폰팝과 달리 박자 동기화는 없어서 BPM 을 맞출 필요는 없습니다.
 - 곡을 바꾸려면 `AUDIO.src` 만 수정하면 됩니다.
 

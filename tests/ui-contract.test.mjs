@@ -32,8 +32,8 @@ test('실패한 응모는 큐에 쌓고 페이지를 떠날 때 sendBeacon 으�
 });
 
 test('음원 파일이 있고, 없으면 합성으로 폴백한다', () => {
-  assert.match(js, /src:'audio\/entertainer\.mp3'/);
-  assert.ok(existsSync(new URL('../audio/entertainer.mp3', import.meta.url)));
+  assert.match(js, /src:'audio\/entertainer-v2\.mp3'/);
+  assert.ok(existsSync(new URL('../audio/entertainer-v2.mp3', import.meta.url)));
   assert.match(js, /music\.fileBroken = true/);
   assert.match(js, /synthStart\(\)/);
 });

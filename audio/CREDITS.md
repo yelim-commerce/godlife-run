@@ -1,6 +1,6 @@
 # 음원 출처 및 라이선스
 
-## entertainer.mp3
+## entertainer-v2.mp3
 
 - **곡**: 〈The Entertainer〉 — 래그타임 피아노곡
 - **작곡**: 스콧 조플린 (Scott Joplin), 1902년 출판 → **작곡 퍼블릭 도메인**
@@ -9,15 +9,20 @@
 - **출처**: Wikimedia Commons
   https://commons.wikimedia.org/wiki/File:%22The_Entertainer%22_(1902),_by_Scott_Joplin.mp3
 - **원본 파일**: MP3 / 128 kbps / 44.1 kHz / 스테레오 / 5분 6초 / 4.9 MB
-- **가공**: 앞 **70초**만 잘라내고 끝 3초 페이드아웃 (ffmpeg, 128 kbps 재인코딩) → 1.1 MB
+- **가공**: 앞 **96초**만 잘라내고 끝 3초 페이드아웃 (ffmpeg, 128 kbps 재인코딩) → 1.5 MB
 
 ```bash
-ffmpeg -i original.mp3 -t 70 -af "afade=t=out:st=67:d=3" -b:a 128k entertainer.mp3
+ffmpeg -i original.mp3 -t 96 -af "afade=t=out:st=93:d=3" -b:a 128k entertainer-v2.mp3
 ```
+
+### 재생 속도
+
+게임에서는 **1.5배속**으로 재생합니다 (`AUDIO.rate`, 음높이는 유지).
+60초 × 1.5 = 90초 분량 + 러시(×1.1) 여유분이라 96초로 잘랐습니다.
+배속을 더 올리면 음원도 그만큼 길게 잘라야 끝부분 페이드아웃이 플레이 중에 들리지 않습니다.
 
 ### 왜 이 곡인가
 
-- 60초 플레이 + 러시(재생속도 ×1.1) 여유분까지 70초면 충분합니다.
 - 경쾌한 래그타임이 레트로 플랫포머 분위기와 잘 맞고, 누구나 한 번쯤 들어본 멜로디입니다.
 - **닌텐도 게임 음악은 저작권이 살아 있어 사용할 수 없습니다.** 컨셉만 가져오고
   음악·캐릭터·그래픽은 모두 퍼블릭 도메인이거나 직접 그린 것입니다.
@@ -27,7 +32,7 @@ ffmpeg -i original.mp3 -t 70 -af "afade=t=out:st=67:d=3" -b:a 128k entertainer.m
 `game.js` 상단 `AUDIO` 객체를 수정하세요.
 
 ```js
-const AUDIO = { src:'audio/entertainer.mp3', startAt:0, volume:0.55 };
+const AUDIO = { src:'audio/entertainer-v2.mp3', startAt:0, volume:0.55, rate:1.5 };
 ```
 
 파일을 지우거나 경로가 틀리면 게임은 같은 곡의 주선율을 **칩튠으로 실시간 합성**해 재생합니다
