@@ -219,83 +219,8 @@ function roundRect(c, x, y, w, h, r){
   c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath();
 }
 
-/* ---------------- 5. 주인공 픽셀 스프라이트 ----------------
-   12×18 픽셀 템플릿 하나에 단계별 팔레트와 액세서리를 덧입힌다.
-   H 머리 · S 피부 · E 눈 · L 입술 · T 상의 · B 하의 · K 신발                    */
-const HERO_BODY = [
-  '....HHHH....',
-  '...HHHHHH...',
-  '..HHHHHHHH..',
-  '..HHSSSSSH..',
-  '..HSSSSESS..',
-  '..HSSSSSSS..',
-  '..HHSSSLS...',
-  '..HH.SSS....',
-  '....TTTT....',
-  '...TTTTTT...',
-  '..STTTTTTS..',
-  '..S.TTTT.S..',
-  '....BBBB....',
-  '...BBBBBB...'
-];
-const HERO_LEGS = {
-  stand: ['....SS.SS...', '....SS.SS...', '....SS.SS...', '...KKK.KKK..'],
-  runA:  ['...SS..SS...', '..SS....SS..', '..SS....SS..', '.KK.....KKK.'],
-  runB:  ['....SSS.....', '....SS.S....', '....SS.S....', '....KKKKK...'],
-  jump:  ['...SS..SSS..', '..SS.....SS.', '.SS.........', '.KK.........']
-};
-const HERO_PAL = [
-  { H:'#3a2620', S:'#ffd9c2', E:'#1a1030', L:'#f29a9a', T:'#ffffff', B:'#4a6fb5', K:'#f2f2f2' },
-  { H:'#3a2620', S:'#ffd9c2', E:'#1a1030', L:'#e8324a', T:'#ffb3c8', B:'#2c2a40', K:'#2c2a40' },
-  { H:'#4a2a20', S:'#ffd9c2', E:'#1a1030', L:'#e8324a', T:'#ffffff', B:'#1f1d30', K:'#1f1d30', J:'#ff4f9a', A:'#7a4bff' },
-  { H:'#5a3222', S:'#ffd9c2', E:'#1a1030', L:'#d81b4a', T:'#fff3e0', B:'#c9955a', K:'#ff2d55', J:'#d9a86c', A:'#b0773b', G:'#151515' },
-  { H:'#6b3a1f', S:'#ffd9c2', E:'#1a1030', L:'#d81b4a', T:'#8a3dff', B:'#8a3dff', K:'#ffc93c', J:'#ffc93c', A:'#ffffff', G:'#151515', C:'#ffd23f' }
-];
-const HERO_H = [1.25, 1.42, 1.58, 1.74, 1.9];      // 단계별 키(타일) — 성장하면 커진다
-const RAINBOW = ['#ff4f9a', '#ffd23f', '#3ee6c1', '#48b8ff', '#a57bff'];
-
-function drawHero(c, cx, bottom, heightPx, idx, pose, opt = {}){
-  const px = heightPx / 18;
-  const left = cx - 6 * px, top = bottom - 18 * px;
-  const pal = Object.assign({}, HERO_PAL[idx]);
-  if (opt.rainbow != null){
-    pal.T = RAINBOW[opt.rainbow % 5]; pal.B = RAINBOW[(opt.rainbow + 2) % 5];
-    if (pal.J) pal.J = RAINBOW[(opt.rainbow + 1) % 5];
-  }
-  const P = (col, row, color) => {
-    c.fillStyle = color;
-    c.fillRect(Math.floor(left + col * px), Math.floor(top + row * px), Math.ceil(px), Math.ceil(px));
-  };
-  const rows = HERO_BODY.concat(HERO_LEGS[pose] || HERO_LEGS.stand);
-  for (let r = 0; r < rows.length; r++){
-    const line = rows[r];
-    const firstT = line.indexOf('T'), lastT = line.lastIndexOf('T');
-    for (let col = 0; col < 12; col++){
-      const k = line[col];
-      if (k === '.') continue;
-      let color = pal[k];
-      if (pal.J){
-        if (k === 'S' && r === 10) color = pal.J;                                   // 긴 소매
-        if (k === 'T' && (col <= firstT || col >= lastT)) color = pal.J;            // 재킷 라펠
-      }
-      if (idx >= 3 && k === 'B' && r >= 12) color = pal.J;                          // 롱코트 자락
-      P(col, r, color);
-    }
-  }
-  if (idx <= 1){ P(1, 3, pal.H); P(1, 4, pal.H); P(0, 5, pal.H); P(0, 6, pal.H); }  // 포니테일
-  else { P(2, 8, pal.H); P(3, 8, pal.H); P(2, 9, pal.H); }                         // 긴 웨이브
-  if (idx >= 1){ P(8, 5, '#ffb0b8'); }                                             // 블러셔
-  if (idx >= 2){                                                                   // 핸드백
-    P(10, 11, pal.A); P(9, 12, pal.A); P(10, 12, pal.A); P(11, 12, pal.A);
-    P(9, 13, pal.A); P(10, 13, pal.A); P(11, 13, pal.A);
-  }
-  if (idx >= 3){ for (let col = 5; col <= 9; col++) P(col, 4, pal.G); P(4, 3, pal.G); } // 선글라스
-  if (idx >= 4){                                                                   // 티아라 + 귀걸이
-    P(4, -1, pal.C); P(5, -1, pal.C); P(6, -1, pal.C); P(7, -1, pal.C);
-    P(4, -2, pal.C); P(6, -2, '#ff4f9a'); P(7, -2, pal.C); P(5, -3, pal.C);
-    P(4, 7, pal.C);
-  }
-}
+/* ---------------- 5. 주인공 크기 (스프라이트는 hero.js) ---------------- */
+const HERO_H = [1.35, 1.5, 1.65, 1.8, 1.95];      // 단계별 키(타일) — 성장하면 커진다
 
 /* ---------------- 6. 오디오 기반 ---------------- */
 let actx = null, master = null, musicGain = null, soundOn = true;
@@ -991,8 +916,10 @@ function drawPlayer(now){
     idx = G.freezeFrom; hPx = HERO_H[idx] * T;
   }
   let pose = 'jump';
-  if (p.onGround) pose = (state === S.COUNT || p.blocked && G.freeze <= 0) ? 'stand' : (Math.floor(p.dist * 2.6) % 2 ? 'runA' : 'runB');
-  if (state === S.COUNT) pose = 'stand';
+  if (p.onGround){
+    const cycle = ['runA', 'stand', 'runB', 'stand'];                 // 4프레임 달리기
+    pose = (state === S.COUNT || p.blocked) ? 'stand' : cycle[Math.floor(p.dist * 3.4) % 4];
+  }
 
   // 그림자
   ctx.fillStyle = 'rgba(0,0,0,.18)';
@@ -1005,7 +932,7 @@ function drawPlayer(now){
     ctx.beginPath(); ctx.ellipse(cx, bottom - hPx * 0.5, hPx * 0.45, hPx * 0.6, 0, 0, Math.PI * 2); ctx.fill();
     ctx.restore();
   }
-  drawHero(ctx, cx, bottom, hPx, idx, pose, G.star > 0 ? { rainbow:Math.floor(now / 90) } : {});
+  drawHero(ctx, cx, bottom, hPx, idx, pose, { rainbow: G.star > 0 ? Math.floor(now / 90) : null, blink: now % 3400 < 140 });
 
   if (G.stageIdx === 4 && Math.random() < 0.3)                                   // 대표는 반짝이는 잔상
     spark(p.x + rand(0, p.w), p.y + rand(0, p.h), Math.random() < 0.5 ? '#ffd23f' : '#ffffff', -2, rand(0, 2));
@@ -1304,8 +1231,8 @@ function drawPortrait(canvasEl, idx){
   const c = canvasEl.getContext('2d');
   c.clearRect(0, 0, canvasEl.width, canvasEl.height);
   c.imageSmoothingEnabled = false;
-  const px = Math.floor((canvasEl.height - 6) / 21);          // 티아라 3칸 포함 21줄
-  drawHero(c, canvasEl.width / 2, canvasEl.height - 3, px * 18, idx, 'stand');
+  const px = Math.max(1, Math.floor((canvasEl.height - 2) / (HERO_GRID.h + 2)));   // 외곽선·티아라 포함 34줄
+  drawHero(c, canvasEl.width / 2, canvasEl.height - 1, px * HERO_GRID.bodyRows, idx, 'stand');
 }
 
 function buildResult(){
@@ -1589,7 +1516,7 @@ function toast(msg){
 /* ---------------- 20. 대기 화면 ---------------- */
 function renderAttract(){
   el.ladder.innerHTML = CONFIG.stages.map((s, i) =>
-    `<div class="step"><canvas width="48" height="66" data-i="${i}"></canvas><b>${s.title}</b><span>${s.percent}%</span></div>`).join('');
+    `<div class="step"><canvas width="66" height="104" data-i="${i}"></canvas><b>${s.title}</b><span>${s.percent}%</span></div>`).join('');
   el.ladder.querySelectorAll('canvas').forEach(c => drawPortrait(c, +c.dataset.i));
   el.lineup.innerHTML = CONFIG.products.map(p => {
     const tag = p.rarity === 'legendary' ? '<span class="r legendary">+3</span>'

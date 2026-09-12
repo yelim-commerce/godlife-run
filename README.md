@@ -107,7 +107,8 @@ Make 시나리오에 새 필드를 매핑하지 않아도 기존 흐름은 그�
 ```
 index.html   화면 구조 (대기 / 카운트다운 / HUD / 결과)
 style.css    UI · 반응형
-game.js      물리·레벨 생성·픽셀 캐릭터·음원/칩튠·쿠폰·웹훅
+hero.js      주인공 픽셀 스프라이트 (20×32 레이어 조합 + 자동 외곽선 + 프레임 캐시)
+game.js      물리·레벨 생성·음원/칩튠·쿠폰·웹훅
 audio/       entertainer.mp3 + CREDITS.md
 tests/       UI·웹훅 계약 테스트
 vercel.json  배포 캐시 헤더 (coupon-pop 과 동일)

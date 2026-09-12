@@ -247,7 +247,7 @@ button{font-family:inherit;cursor:pointer;border:0;color:inherit}
 }
 .grade{align-self:center;font-family:var(--pixel);font-size:11px;background:var(--ink);color:var(--gold);padding:8px 12px;border-radius:10px}
 .hero-wrap{display:flex;align-items:center;justify-content:center;gap:14px}
-#rHero{width:110px;height:140px;image-rendering:pixelated;background:radial-gradient(circle at 50% 72%,#ffd6ea 0,#fff0 68%)}
+#rHero{width:108px;height:141px;image-rendering:pixelated;background:radial-gradient(circle at 50% 72%,#ffd6ea 0,#fff0 68%)}
 .hero-txt{text-align:left}
 .hero-kicker{font-size:13px;font-weight:800;color:var(--muted)}
 .hero-txt b{display:block;font-size:44px;font-weight:900;line-height:1.05;color:var(--pink)}
